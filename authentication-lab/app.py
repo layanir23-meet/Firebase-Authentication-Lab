@@ -74,17 +74,31 @@ def signup():
 @app.route('/add_tweet', methods=['GET', 'POST'])
 def add_tweet():
     if request.method == "POST":
-        tweet = tweet.form['tweet']
-    tweet = {"tweet" : tweet , "uid" : login_session['user']['localId']}
-    db.child("tweets").child(login_session['tweet']['localId']).push(tweet)
+        tweetf =request.form['tweet']
+        try:
+            tweet = {"tweet" : tweetf, "uid" : login_session['user']['localId']}
+            db.child("tweets").push(tweet)
+            return redirect(url_for("all_tweet"))
+        except:
+            error = "Authentication failed"
+            return render_template("add_tweet.html")
+        
+
+    else:
+        return render_template("add_tweet.html")
+
+
+        
+    
 
  
 
-    return render_template("add_tweet.html")
+    
 
 @app.route ('/all_tweets' , methods = ['GET', 'POST'])
 def all_tweet():
-     tweet = db.child("tweets").child(login_session['tweet']['localId']).get().val()
+     tweet = db.child("tweets").get().val()
+     return render_template ("tweets.html", tweet = tweet )
 
 if __name__ == '__main__':
     app.run(debug=True)
